@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx watch --tsconfig ./tsconfig.json main.ts",
+    "dev": "nodemon main.ts",
     "start": "tsx main.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -13,10 +13,10 @@
   "description": "",
   "dependencies": {
     "mysql2": "^3.12.0",
-    "reflect-metadata": "^0.2.2",
-    "tsx": "^4.19.2"
+    "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {
+    "tsx": "^4.19.2",
     "@types/node": "^22.10.7"
   }
 }

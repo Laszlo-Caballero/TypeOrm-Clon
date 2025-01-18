@@ -1,6 +1,6 @@
 import { getConection } from "../Mysql/mysql";
 import parseTypes from "./parserTypes";
-import { Repository } from "./types";
+import { ParseUpdate, Repository } from "./types";
 
 export function Table(name?: string) {
   return function (target: any) {
@@ -16,6 +16,60 @@ export function Table(name?: string) {
       const cn = await getConection();
       const [rows] = await cn.query(`SELECT * FROM ${nameTable}`);
       return rows;
+    };
+
+    target.prototype.findOne = async function (data: any) {
+      const condition = Object.entries(data)
+        .map(([key, value]) =>
+          typeof value === "string"
+            ? `${key} = '${value}'`
+            : `${key} = ${value}`
+        )
+        .join(" AND ");
+
+      const cn = await getConection();
+
+      const [rows] = await cn.query(
+        `SELECT * FROM ${nameTable} WHERE ${condition}`
+      );
+
+      return rows[0] || {};
+    };
+
+    target.prototype.save = async function (data: any) {
+      const keys = Object.keys(data).join(",");
+      const values = Object.values(data)
+        .map((value) => (typeof value === "string" ? `'${value}'` : value))
+        .join(",");
+      const cn = await getConection();
+
+      await cn.query(`INSERT INTO ${nameTable} (${keys}) VALUES (${values})`);
+
+      return data;
+    };
+
+    target.prototype.updateBy = async function (data: any, condition: any) {
+      const keys = Object.keys(data)
+        .map((key) =>
+          typeof data[key] === "string"
+            ? `${key} = '${data[key]}'`
+            : `${key} = ${data[key]}`
+        )
+        .join(",");
+
+      const conditions = Object.entries(condition)
+        .map(([key, value]) => `${key} = ${value}`)
+        .join(" AND ");
+
+      const cn = await getConection();
+
+      const [rows] = await cn.query(
+        `UPDATE ${nameTable} SET ${keys} WHERE ${conditions}`
+      );
+
+      const parseRows = rows as ParseUpdate;
+
+      return parseRows;
     };
   };
 }

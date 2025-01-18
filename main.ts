@@ -18,6 +18,24 @@ class Tabla {
   edad: number;
 }
 
+@Table()
+class Persona {
+  @PrimaryKey()
+  id: number;
+
+  @Atribute()
+  nombre: string;
+
+  @Atribute()
+  apellidoMaterno: string;
+
+  @Atribute()
+  apellidoPaterno: string;
+
+  @Atribute()
+  edad: number;
+}
+
 // Prueba
 
 async function main() {
@@ -25,8 +43,27 @@ async function main() {
 
   const HydrationTabla = Hydration(tabla);
 
+  const persona = new Persona();
+
+  const HydrationPersona = Hydration(persona);
+
   const datos = await HydrationTabla.findAll();
+  const findOne = await HydrationTabla.findOne({
+    nombre: "Juan",
+  });
+  // const update = await HydrationTabla.updateBy(
+  //   {
+  //     nombre: "Lalo",
+  //   },
+  //   {
+  //     id: 1,
+  //   }
+  // );
+
+  // console.log(update.affectedRows);
+
   console.log(datos);
+  console.log(findOne);
 }
 
 main();
